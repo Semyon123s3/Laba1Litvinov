@@ -32,7 +32,7 @@ void Show_menu() {
     cout << "Выберите действие: ";
 }
 
-void add_Truba(Pipe t) {
+void Add_Truba(Pipe& t) {
     cout << "Добавление трубы" << endl;
     cout << "Введите килметровую отметку(название): ";
     cin.ignore();
@@ -46,7 +46,8 @@ void add_Truba(Pipe t) {
     t.isAdded = true;
     cout << "Труба добавлена/изменена!" << endl;
 }
-void add_CS(CS k) {
+
+void Add_CS(CS& k) {
     cout << "Название: ";
     cin.ignore();
     getline(cin, k.name);
@@ -60,9 +61,39 @@ void add_CS(CS k) {
     cout << "КС добавлена/изменена!" << endl;
 }
 
+void Show_Truba(const Pipe& t) {
+    cout << "\n=== Труба ===" << endl;
+    cout << "Километровая отметка(Название): " << t.name << endl;
+    cout << "Длина: " << t.length << " км" << endl;
+    cout << "Диаметр: " << t.diametr << " мм" << endl;
+    cout << "В ремонте: " << (t.status ? "да" : "нет") << endl;
+}
 
+void Show_CS(const CS& k) {
+    cout << "\n=== Компрессорная станция ===" << endl;
+    cout << "Название: " << k.name << endl;
+    cout << "Всего цехов: " << k.number_work << endl;
+    cout << "Цехов в работе" << k.number_work_online << endl;
+    cout << "Класс: " << k.class_cs << endl;
+}
 
+void Show_All(const Pipe& t, const CS& k) {
+    cout << "\n=== Все объекты ===" << endl;
 
+    if (t.isAdded) {
+        Show_Truba(t);
+    }
+    else {
+        cout << "Труба не добавлена." << endl;
+    }
+
+    if (k.isAdded) {
+        Show_CS(k);
+    }
+    else {
+        cout << "КС не добавлена." << endl;
+    }
+}
 
 
 
