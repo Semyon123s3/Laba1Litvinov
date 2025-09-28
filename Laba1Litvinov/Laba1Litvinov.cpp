@@ -34,7 +34,7 @@ void Show_menu() {
 }
 
 void Add_Truba(Pipe& t) {
-    cout << "Добавление трубы" << endl;
+    cout << "\nДобавление трубы" << endl;
     cout << "Введите килметровую отметку(название): ";
     cin.ignore();
     getline(cin, t.name);
@@ -45,10 +45,11 @@ void Add_Truba(Pipe& t) {
     cout << "В ремонте (1-да, 0-нет): ";
     cin >> t.status;
     t.isAdded = true;
-    cout << "Труба добавлена/изменена!" << endl;
+    cout << "Труба добавлена!" << endl;
 }
 
 void Add_CS(CS& k) {
+    cout << "\nДобавление КС" << endl;
     cout << "Название: ";
     cin.ignore();
     getline(cin, k.name);
@@ -59,7 +60,7 @@ void Add_CS(CS& k) {
     cout << "Класс: ";
     cin >> k.class_cs;
     k.isAdded = true;
-    cout << "КС добавлена/изменена!" << endl;
+    cout << "КС добавлена!" << endl;
 }
 
 void Show_Truba(const Pipe& t) {
@@ -74,7 +75,7 @@ void Show_CS(const CS& k) {
     cout << "\n=== Компрессорная станция ===" << endl;
     cout << "Название: " << k.name << endl;
     cout << "Всего цехов: " << k.number_work << endl;
-    cout << "Цехов в работе" << k.number_work_online << endl;
+    cout << "Цехов в работе: " << k.number_work_online << endl;
     cout << "Класс: " << k.class_cs << endl;
 }
 
@@ -104,7 +105,7 @@ void Edit_Truba(Pipe& t) {
 
     t.status = !t.status;
     cout << "Статус ремонта изменен. Теперь: "
-        << (t.status ? "в ремонте" : "работает") << endl;
+        << (t.status ? "в ремонте" : "не в ремонте") << endl;
 }
 
 
@@ -115,8 +116,6 @@ void Edit_CS(CS& k) {
     }
 
     cout << "\nТекущее состояние цехов: " << k.number_work_online << " из " << k.number_work << " работают" << endl;
-    cout << "Доступно для запуска: " << (k.number_work - k.number_work_online) << " цехов" << endl;
-    cout << "Доступно для остановки: " << k.number_work_online << " цехов" << endl;
 
     int izmenenie;
     cout << "\nВведите количество цехов для изменения:" << endl;
@@ -156,87 +155,98 @@ void Edit_CS(CS& k) {
     cout << "Текущее состояние: " << k.number_work_online << " из " << k.number_work << " цехов работают" << endl;
 }
 
-// Функция сохранения данных в файл
 void Save_File(const Pipe& t, const CS& k, const string& filename) {
-    ofstream file("data.txt");
+    ofstream file(filename);
+
     if (!file.is_open()) {
-        cout << "Ошибка: Не удалось открыть файл '" << "data.txt" << "' для записи." << endl;
+        cout << "Ошибка: Не удалось создать файл '" << filename << "'" << endl;
         return;
     }
 
-    try {
-        // Записываем данные трубы
-        file << t.isAdded << endl;
-        file << t.name << endl;
-        file << t.length << endl;
-        file << t.diametr << endl;
-        file << t.status << endl;
+    file << t.isAdded << endl;
+    file << t.name << endl;
+    file << t.length << endl;
+    file << t.diametr << endl;
+    file << t.status << endl;
 
-        // Записываем данные КС
-        file << k.isAdded << endl;
-        file << k.name << endl;
-        file << k.number_work << endl;
-        file << k.number_work_online << endl;
-        file << k.class_cs << endl;
+    file << k.isAdded << endl;
+    file << k.name << endl;
+    file << k.number_work << endl;
+    file << k.number_work_online << endl;
+    file << k.class_cs << endl;
 
-        // Проверяем, не произошла ли ошибка при записи
-        if (file.fail()) {
-            throw runtime_error("Ошибка записи в файл");
-        }
-
-        cout << "Данные успешно сохранены в файл: " << filename << endl;
-    }
-    catch (const exception& e) {
-        cout << "Ошибка при сохранении: " << e.what() << endl;
+    if (file.fail()) {
+        cout << "Ошибка: Не удалось записать данные в файл" << endl;
+        file.close();
+        return;
     }
 
-    // Всегда закрываем файл
     file.close();
+    cout << "Данные успешно сохранены в файл: " << filename << endl;
 }
 
-// Функция загрузки данных из файла
 void Load_File(Pipe& t, CS& k, const string& filename) {
     ifstream file(filename);
+
     if (!file.is_open()) {
-        cout << "Ошибка: Не удалось открыть файл '" << filename << "' для чтения." << endl;
+        cout << "Ошибка: Файл '" << filename << "' не найден или недоступен" << endl;
         return;
     }
 
-    try {
-        // Читаем данные трубы
-        file >> t.isAdded;
-        file.ignore(1000, '\n'); // Игнорируем оставшиеся символы до конца строки
-        getline(file, t.name);
-        file >> t.length;
-        file >> t.diametr;
-        file >> t.status;
+    Pipe backup_t = t;
+    CS backup_k = k;
 
-        // Читаем данные КС
-        file >> k.isAdded;
-        file.ignore(1000, '\n'); // Игнорируем оставшиеся символы до конца строки
-        getline(file, k.name);
-        file >> k.number_work;
-        file >> k.number_work_online;
-        file >> k.class_cs;
+    file >> t.isAdded;
+    file.ignore(1000, '\n');
+    getline(file, t.name);
+    file >> t.length;
+    file >> t.diametr;
+    file >> t.status;
 
-        // Проверяем, не произошла ли ошибка при чтении
-        if (file.fail() && !file.eof()) {
-            throw runtime_error("Ошибка чтения файла");
-        }
+    file >> k.isAdded;
+    file.ignore(1000, '\n');
+    getline(file, k.name);
+    file >> k.number_work;
+    file >> k.number_work_online;
+    file >> k.class_cs;
 
-        cout << "Данные успешно загружены из файла: " << filename << endl;
-    }
-    catch (const exception& e) {
-        cout << "Ошибка при загрузке: " << e.what() << endl;
-        // Сбрасываем состояния объектов при ошибке загрузки
-        t.isAdded = false;
-        k.isAdded = false;
+    if (file.fail() && !file.eof()) {
+        t = backup_t;
+        k = backup_k;
+        file.close();
+        cout << "Ошибка: Файл поврежден или имеет неверный формат" << endl;
+        return;
     }
 
-    // Всегда закрываем файл
     file.close();
-}
+    cout << "Данные успешно загружены из файла: " << filename << endl;
 
+    cout << "\n=== ЗАГРУЖЕННЫЕ ДАННЫЕ ===" << endl;
+    if (t.isAdded) {
+        cout << "ТРУБА:" << endl;
+        cout << "  Название: " << t.name << endl;
+        cout << "  Длина: " << t.length << " км" << endl;
+        cout << "  Диаметр: " << t.diametr << " мм" << endl;
+        cout << "  Статус: " << (t.status ? "в ремонте" : "работает") << endl;
+    }
+    else {
+        cout << "Труба: не была сохранена в файле" << endl;
+    }
+
+    cout << endl;
+
+    if (k.isAdded) {
+        cout << "КОМПРЕССОРНАЯ СТАНЦИЯ:" << endl;
+        cout << "  Название: " << k.name << endl;
+        cout << "  Всего цехов: " << k.number_work << endl;
+        cout << "  Работающих цехов: " << k.number_work_online << endl;
+        cout << "  Класс: " << k.class_cs << endl;
+    }
+    else {
+        cout << "Компрессорная станция: не была сохранена в файле" << endl;
+    }
+    cout << "============================" << endl;
+}
 
 int main() {
     setlocale(LC_ALL, "Russian");
@@ -291,7 +301,6 @@ int main() {
             cout << "Неверный выбор! Пожалуйста, выберите действие из меню." << endl;
         }
 
-        // Очистка буфера ввода после каждого действия
         cin.clear();
         cin.ignore(1000, '\n');
     }
