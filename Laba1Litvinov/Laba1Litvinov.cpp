@@ -68,7 +68,6 @@ void Add_Truba(Pipe& t) {
 
     t.isAdded = true;
     cout << "Труба добавлена!" << endl;
-    cin.ignore(1000, '\n');
 }
 
 void Add_CS(CS& k) {
@@ -350,8 +349,6 @@ int main() {
         default:
             cout << "Неверный выбор! Пожалуйста, выберите действие из меню." << endl;
         }
-
-        cin.clear();
         cin.ignore(1000, '\n');
     }
 }
