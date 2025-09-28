@@ -157,7 +157,7 @@ void Edit_CS(CS& k) {
 }
 
 // Функция сохранения данных в файл
-void save_to_file(const Pipe& t, const CS& k, const string& filename) {
+void Save_File(const Pipe& t, const CS& k, const string& filename) {
     ofstream file("data.txt");
     if (!file.is_open()) {
         cout << "Ошибка: Не удалось открыть файл '" << "data.txt" << "' для записи." << endl;
@@ -195,7 +195,7 @@ void save_to_file(const Pipe& t, const CS& k, const string& filename) {
 }
 
 // Функция загрузки данных из файла
-void load_from_file(Pipe& t, CS& k, const string& filename) {
+void Load_File(Pipe& t, CS& k, const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
         cout << "Ошибка: Не удалось открыть файл '" << filename << "' для чтения." << endl;
@@ -238,17 +238,58 @@ void load_from_file(Pipe& t, CS& k, const string& filename) {
 }
 
 
-int main()
-{
-    setlocale(LC_ALL, "Russian");
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
-    std::cout << "Hello World!\n";
-    Pipe truba;
-    cout << "Введите имя трубы:";
-    cin >> truba.name;
-    cout << "\nИмя трубы:" << truba.name;
-    return 1;
+int main() {
+    Pipe t;
+    CS k;
+    int choice;
+    string filename;
 
+    while (true) {
+        Show_menu();
+
+        if (!(cin >> choice)) {
+            cout << "Ошибка ввода! Пожалуйста, введите число." << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
+
+        switch (choice) {
+        case 1:
+            Add_Truba(t);
+            break;
+        case 2:
+            Add_CS(k);
+            break;
+        case 3:
+            Show_All(t, k);
+            break;
+        case 4:
+            Edit_Truba(t);
+            break;
+        case 5:
+            Edit_CS(k);
+            break;
+        case 6:
+            cout << "Имя файла для сохранения: ";
+            cin >> filename;
+            Save_File(t, k, filename);
+            break;
+        case 7:
+            cout << "Имя файла для загрузки: ";
+            cin >> filename;
+            Load_File(t, k, filename);
+            break;
+        case 0:
+            cout << "Выход из программы." << endl;
+            return 0;
+        default:
+            cout << "Неверный выбор! Пожалуйста, выберите действие из меню." << endl;
+        }
+
+        // Очистка буфера ввода после каждого действия
+        cin.clear();
+        cin.ignore(1000, '\n');
+    }
 }
 
