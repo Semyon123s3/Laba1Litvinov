@@ -239,6 +239,10 @@ void Load_File(Pipe& t, CS& k, const string& filename) {
 
 
 int main() {
+    setlocale(LC_ALL, "Russian");
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+    std::cout << "Hello World!\n";
     Pipe t;
     CS k;
     int choice;
