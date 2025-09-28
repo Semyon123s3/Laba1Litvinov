@@ -2,6 +2,7 @@
 #include <iostream>
 #include <windows.h>
 #include <string>
+#include <fstream>
 using namespace std;
 
 struct Pipe {
@@ -153,6 +154,87 @@ void Edit_CS(CS& k) {
     }
 
     cout << "Текущее состояние: " << k.number_work_online << " из " << k.number_work << " цехов работают" << endl;
+}
+
+// Функция сохранения данных в файл
+void save_to_file(const Pipe& t, const CS& k, const string& filename) {
+    ofstream file("data.txt");
+    if (!file.is_open()) {
+        cout << "Ошибка: Не удалось открыть файл '" << "data.txt" << "' для записи." << endl;
+        return;
+    }
+
+    try {
+        // Записываем данные трубы
+        file << t.isAdded << endl;
+        file << t.name << endl;
+        file << t.length << endl;
+        file << t.diametr << endl;
+        file << t.status << endl;
+
+        // Записываем данные КС
+        file << k.isAdded << endl;
+        file << k.name << endl;
+        file << k.number_work << endl;
+        file << k.number_work_online << endl;
+        file << k.class_cs << endl;
+
+        // Проверяем, не произошла ли ошибка при записи
+        if (file.fail()) {
+            throw runtime_error("Ошибка записи в файл");
+        }
+
+        cout << "Данные успешно сохранены в файл: " << filename << endl;
+    }
+    catch (const exception& e) {
+        cout << "Ошибка при сохранении: " << e.what() << endl;
+    }
+
+    // Всегда закрываем файл
+    file.close();
+}
+
+// Функция загрузки данных из файла
+void load_from_file(Pipe& t, CS& k, const string& filename) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cout << "Ошибка: Не удалось открыть файл '" << filename << "' для чтения." << endl;
+        return;
+    }
+
+    try {
+        // Читаем данные трубы
+        file >> t.isAdded;
+        file.ignore(1000, '\n'); // Игнорируем оставшиеся символы до конца строки
+        getline(file, t.name);
+        file >> t.length;
+        file >> t.diametr;
+        file >> t.status;
+
+        // Читаем данные КС
+        file >> k.isAdded;
+        file.ignore(1000, '\n'); // Игнорируем оставшиеся символы до конца строки
+        getline(file, k.name);
+        file >> k.number_work;
+        file >> k.number_work_online;
+        file >> k.class_cs;
+
+        // Проверяем, не произошла ли ошибка при чтении
+        if (file.fail() && !file.eof()) {
+            throw runtime_error("Ошибка чтения файла");
+        }
+
+        cout << "Данные успешно загружены из файла: " << filename << endl;
+    }
+    catch (const exception& e) {
+        cout << "Ошибка при загрузке: " << e.what() << endl;
+        // Сбрасываем состояния объектов при ошибке загрузки
+        t.isAdded = false;
+        k.isAdded = false;
+    }
+
+    // Всегда закрываем файл
+    file.close();
 }
 
 
