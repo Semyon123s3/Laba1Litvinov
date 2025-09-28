@@ -95,6 +95,65 @@ void Show_All(const Pipe& t, const CS& k) {
     }
 }
 
+void Edit_Truba(Pipe& t) {
+    if (!t.isAdded) {
+        cout << "Ошибка! Сначала добавьте трубу." << endl;
+        return;
+    }
+
+    t.status = !t.status;
+    cout << "Статус ремонта изменен. Теперь: "
+        << (t.status ? "в ремонте" : "работает") << endl;
+}
+
+
+void Edit_CS(CS& k) {
+    if (!k.isAdded) {
+        cout << "Ошибка! Сначала добавьте компрессорную станцию." << endl;
+        return;
+    }
+
+    cout << "\nТекущее состояние цехов: " << k.number_work_online << " из " << k.number_work << " работают" << endl;
+    cout << "Доступно для запуска: " << (k.number_work - k.number_work_online) << " цехов" << endl;
+    cout << "Доступно для остановки: " << k.number_work_online << " цехов" << endl;
+
+    int izmenenie;
+    cout << "\nВведите количество цехов для изменения:" << endl;
+    cout << " - положительное число для ЗАПУСКА цехов (например, 2)" << endl;
+    cout << " - отрицательное число для ОСТАНОВКИ цехов (например, -1)" << endl;
+    cout << " - 0 для выхода без изменений" << endl;
+    cout << "Ваш выбор: ";
+
+    cin >> izmenenie;
+
+    if (izmenenie == 0) {
+        cout << "Изменения отменены." << endl;
+        return;
+    }
+
+    if (izmenenie > 0) {
+        if (k.number_work_online + izmenenie <= k.number_work) {
+            k.number_work_online += izmenenie;
+            cout << "Успешно запущено " << izmenenie << " цехов." << endl;
+        }
+        else {
+            int available = k.number_work - k.number_work_online;
+            cout << "Ошибка! Нельзя запустить более " << available << " цехов." << endl;
+        }
+    }
+    else {
+        int stop_count = -izmenenie; 
+        if (k.number_work_online >= stop_count) {
+            k.number_work_online -= stop_count;
+            cout << "Успешно остановлено " << stop_count << " цехов." << endl;
+        }
+        else {
+            cout << "Ошибка! Нельзя остановить более " << k.number_work_online << " цехов." << endl;
+        }
+    }
+
+    cout << "Текущее состояние: " << k.number_work_online << " из " << k.number_work << " цехов работают" << endl;
+}
 
 
 int main()
